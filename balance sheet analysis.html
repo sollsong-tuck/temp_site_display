@@ -1,0 +1,553 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Liabilities & Equities Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1923;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .dashboard {
+            background: #15232e;
+            border-radius: 12px;
+            border: 1px solid #1e3448;
+            padding: 48px 48px 40px;
+            width: 100%;
+            max-width: 1150px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ── Header ── */
+        .header {
+            border-bottom: 1px solid #1e3448;
+            padding-bottom: 24px;
+            margin-bottom: 36px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .company-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #4a90b8;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .report-meta {
+            text-align: right;
+        }
+
+        .report-meta p {
+            font-size: 12px;
+            color: #5a7a94;
+            margin-bottom: 3px;
+        }
+
+        .report-meta span {
+            color: #8aafc7;
+            font-weight: 600;
+        }
+
+        /* ── Stats Grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .stat-card {
+            background: #1a2d3d;
+            border-radius: 8px;
+            padding: 20px 22px;
+            border: 1px solid #1e3448;
+            border-top: 3px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .stat-card.s1 { border-top-color: #4a90b8; }
+        .stat-card.s2 { border-top-color: #2e86ab; }
+        .stat-card.s3 { border-top-color: #5ba4c4; }
+        .stat-card.s4 { border-top-color: #e05c5c; }
+
+        .stat-label {
+            color: #5a7a94;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: #5a7a94;
+        }
+
+        .stat-value.decline { color: #e05c5c; }
+        .stat-value.highlight { color: #4a90b8; }
+
+        /* ── Chart ── */
+        .chart-section {
+            background: #1a2d3d;
+            border-radius: 8px;
+            border: 1px solid #1e3448;
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #4a90b8;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 380px;
+        }
+
+        /* ── Table ── */
+        .table-section {
+            background: #1a2d3d;
+            border-radius: 8px;
+            border: 1px solid #1e3448;
+            padding: 28px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #c8daea;
+            font-size: 13.5px;
+        }
+
+        thead tr {
+            border-bottom: 2px solid #1e3448;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: #4a90b8;
+        }
+
+        td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #1a2d3d80;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background: rgba(74, 144, 184, 0.06);
+        }
+
+        .period-label {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .value-cell {
+            color: #8aafc7;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bar-cell { width: 160px; }
+
+        .bar-bg {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #2e86ab, #4a90b8);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-highest {
+            background: rgba(74, 144, 184, 0.15);
+            color: #4a90b8;
+            border: 1px solid rgba(74, 144, 184, 0.35);
+        }
+
+        .badge-lowest {
+            background: rgba(224, 92, 92, 0.12);
+            color: #e05c5c;
+            border: 1px solid rgba(224, 92, 92, 0.3);
+        }
+
+        .change-pill {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ── Footer ── */
+        footer {
+            margin-top: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        footer p {
+            color: #2e4f65;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: #1e3448;
+            margin: 28px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <div class="company-label">Financial Report</div>
+                <h1>Total Liabilities &amp; Equities Summary</h1>
+            </div>
+            <div class="report-meta">
+                <p>Periods Covered: <span>P1 — P12</span></p>
+                <p>Currency: <span>USD ($)</span></p>
+                <p>Report Type: <span>Balance Sheet</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+        <div class="stat-card s1">
+            <div class="stat-label">Highest Value</div>
+            <div class="stat-value highlight" id="highVal"></div>
+            <div class="stat-sub" id="highPeriod"></div>
+        </div>
+        <div class="stat-card s2">
+            <div class="stat-label">Lowest Value</div>
+            <div class="stat-value" id="lowVal"></div>
+            <div class="stat-sub" id="lowPeriod"></div>
+        </div>
+        <div class="stat-card s3">
+            <div class="stat-label">Period Average</div>
+            <div class="stat-value highlight" id="avgVal"></div>
+            <div class="stat-sub">All 12 Periods</div>
+        </div>
+        <div class="stat-card s4">
+            <div class="stat-label">Total Decline (P1-P12)</div>
+            <div class="stat-value decline" id="totalChange"></div>
+            <div class="stat-sub" id="totalChangeDollar"></div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section">
+        <div class="section-title">Period Performance — Bar &amp; Trend Overview</div>
+        <div class="chart-container">
+            <canvas id="liabChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-section">
+        <div class="section-title">Detailed Period Breakdown</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Total Liabilities &amp; Equities</th>
+                        <th>Period-over-Period Change</th>
+                        <th>Relative Scale</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>Total Liabilities &amp; Equities Summary &nbsp;|&nbsp; Balance Sheet Analysis</p>
+    <p>All figures reported in United States Dollars (USD)</p>
+</footer>
+
+<script>
+    const periods = ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12'];
+    const values  = [
+        3628309.85, 3325012.76, 3055428.18, 3221687.94,
+        3117593.77, 2925637.77, 2735850.80, 2598747.91,
+        2456707.96, 2309686.85, 2138700.50, 2005154.85
+    ];
+
+    const fmt = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const maxVal  = Math.max(...values);
+    const minVal  = Math.min(...values);
+    const maxIdx  = values.indexOf(maxVal);
+    const minIdx  = values.indexOf(minVal);
+    const avg     = values.reduce((a, b) => a + b, 0) / values.length;
+    const totalChange    = values[values.length - 1] - values[0];
+    const totalChangePct = ((totalChange / values[0]) * 100).toFixed(2);
+
+    // Stat Cards
+    document.getElementById('highVal').textContent         = fmt(maxVal);
+    document.getElementById('highPeriod').textContent      = `Period ${maxIdx + 1}`;
+    document.getElementById('lowVal').textContent          = fmt(minVal);
+    document.getElementById('lowPeriod').textContent       = `Period ${minIdx + 1}`;
+    document.getElementById('avgVal').textContent          = fmt(avg);
+    document.getElementById('totalChange').textContent     = `${totalChangePct}%`;
+    document.getElementById('totalChangeDollar').textContent = fmt(totalChange);
+
+    // Chart
+    const ctx = document.getElementById('liabChart').getContext('2d');
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 380);
+    gradient.addColorStop(0, 'rgba(74, 144, 184, 0.25)');
+    gradient.addColorStop(1, 'rgba(74, 144, 184, 0.01)');
+
+    const barColors = values.map((v, i) => {
+        if (i === maxIdx) return 'rgba(74, 144, 184, 0.95)';
+        if (i === minIdx) return 'rgba(224, 92, 92, 0.85)';
+        return 'rgba(46, 134, 171, 0.70)';
+    });
+
+    const borderColors = values.map((v, i) => {
+        if (i === maxIdx) return '#4a90b8';
+        if (i === minIdx) return '#e05c5c';
+        return '#2e86ab';
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: periods,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Total Liabilities & Equities',
+                    data: values,
+                    backgroundColor: barColors,
+                    borderColor: borderColors,
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                    yAxisID: 'y',
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: 'Trend Line',
+                    data: values,
+                    borderColor: 'rgba(255,255,255,0.55)',
+                    borderWidth: 2,
+                    borderDash: [5, 4],
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#4a90b8',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    yAxisID: 'y',
+                    order: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#5a7a94',
+                        font: { size: 12 },
+                        usePointStyle: true,
+                        pointStyleWidth: 10
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `  ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`
+                    },
+                    backgroundColor: '#0f1923',
+                    titleColor: '#8aafc7',
+                    bodyColor: '#c8daea',
+                    padding: 14,
+                    borderColor: '#1e3448',
+                    borderWidth: 1,
+                    titleFont: { size: 13, weight: '600' },
+                    bodyFont: { size: 12 }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#5a7a94', font: { size: 12 } },
+                    grid: { color: 'rgba(30, 52, 72, 0.8)' },
+                    border: { color: '#1e3448' }
+                },
+                y: {
+                    ticks: {
+                        color: '#5a7a94',
+                        font: { size: 11 },
+                        callback: v => '$' + (v / 1_000_000).toFixed(2) + 'M'
+                    },
+                    grid: { color: 'rgba(30, 52, 72, 0.8)' },
+                    border: { dash: [4, 4], color: '#1e3448' }
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+
+    // Table
+    const tbody = document.getElementById('tableBody');
+
+    values.forEach((val, i) => {
+        const pct       = (val / maxVal) * 100;
+        const change    = i === 0 ? null : val - values[i - 1];
+        const changePct = i === 0 ? null : ((change / values[i - 1]) * 100).toFixed(2);
+
+        let changeHTML = '<span style="color:#2e4f65;">—</span>';
+        if (change !== null) {
+            const isUp  = change >= 0;
+            const color = isUp ? '#4a90b8' : '#e05c5c';
+            const arrow = isUp ? '▲' : '▼';
+            const sign  = isUp ? '+' : '';
+            changeHTML = `<span class="change-pill" style="background:${color}18; color:${color}; border:1px solid ${color}44;">
+                            ${arrow} ${sign}${changePct}%
+                          </span>`;
+        }
+
+        let badge = '<span style="color:#2e4f65; font-size:12px;">—</span>';
+        if (i === maxIdx) badge = '<span class="badge badge-highest">Highest</span>';
+        if (i === minIdx) badge = '<span class="badge badge-lowest">Lowest</span>';
+
+        tbody.innerHTML += `
+            <tr>
+                <td class="period-label">${periods[i]}</td>
+                <td class="value-cell">${fmt(val)}</td>
+                <td>${changeHTML}</td>
+                <td class="bar-cell">
+                    <div class="bar-bg">
+                        <div class="bar-fill" style="width:${pct}%;"></div>
+                    </div>
+                </td>
+                <td>${badge}</td>
+            </tr>`;
+    });
+</script>
+
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
